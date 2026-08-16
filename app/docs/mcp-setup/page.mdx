@@ -1,0 +1,105 @@
+# MCP setup
+
+1. [Create an API key](/keys) (`ttk_live_…`).
+2. Add TuringTap to your MCP client — pick yours:
+
+## Claude Code (CLI)
+
+One command:
+
+```sh
+claude mcp add --transport sse turingtap https://mcp.turingtap.ai/sse \
+  --header "Authorization: Bearer ttk_live_xxx"
+```
+
+Verify with `/mcp` inside a session — you should see `turingtap` connected
+and its tools listed.
+
+## Claude Desktop
+
+Claude Desktop launches local processes, so bridge to our SSE endpoint with
+`mcp-remote`. Settings → Developer → **Edit Config** (opens
+`claude_desktop_config.json`; on macOS it lives at
+`~/Library/Application Support/Claude/`) and add:
+
+```json
+{
+  "mcpServers": {
+    "turingtap": {
+      "command": "npx",
+      "args": [
+        "-y", "mcp-remote",
+        "https://mcp.turingtap.ai/sse",
+        "--header", "Authorization:Bearer ttk_live_xxx"
+      ]
+    }
+  }
+}
+```
+
+Save, then **fully quit and reopen** Claude Desktop. The tools appear under
+the 🔨 icon.
+
+## Cursor / Windsurf / other SSE-native clients
+
+```json
+{
+  "mcpServers": {
+    "turingtap": {
+      "type": "sse",
+      "url": "https://mcp.turingtap.ai/sse",
+      "headers": { "Authorization": "Bearer ttk_live_xxx" }
+    }
+  }
+}
+```
+
+(Cursor: `.cursor/mcp.json` in your project or `~/.cursor/mcp.json` globally.)
+
+Any of these is enough for **observe-only** — no other install required.
+Give your agent the [SKILL.md](/SKILL.md) so it knows the workflow patterns.
+
+## No-install path (observe & analyze)
+
+The desktop agent is required for `goto()`/`act()`, screencast handoffs, and
+LAN targets — but not for reading the wire. `session_info()` returns the
+proxy host, port, a per-session token, and the CA certificate; your AI can
+configure **any** HTTP client with those and every request it (or you) sends
+through the proxy shows up in `get_traffic()` / `analyze()`:
+
+```sh
+# example: route curl through your session
+curl -x http://<session-token>:x@proxy.turingtap.ai:8443 \
+     --cacert turingtap-ca.pem \
+     https://api.example.com/v1/things
+```
+
+Works the same for `httpx`, Playwright you already run, or a whole test
+suite — point it at the proxy and let your AI watch.
+
+## Full capability (with the agent)
+
+3. [Install `turingtap-agent`](/download) and paste your key into
+   `~/.turingtap/agent.toml`. This adds:
+   - `goto()` / `act()` — your AI drives a real Chromium on your machine
+   - `ask_human()` screencasts — solvable in [any browser](/account) or the
+     mobile app
+   - LAN targets (Pro, off by default — enable in
+     [Settings](/account#settings))
+
+The agent also exposes a local SSE endpoint that forwards to the cloud and
+adds `agent_status` / `agent_lan_test`:
+
+```json
+{
+  "mcpServers": {
+    "turingtap": {
+      "type": "sse",
+      "url": "http://localhost:7847/sse"
+    }
+  }
+}
+```
+
+Once connected, call `session_info()` to get everything your AI needs for
+the session.

@@ -1,0 +1,24 @@
+# Use your own browser or HTTP client
+
+The bundled Chromium is optional. Any HTTP client that supports an explicit
+proxy + custom CA can feed traffic into a TuringTap session.
+
+Call `session_info()` to get `{proxy: {host, port, ca_pem}}`, then:
+
+## curl
+
+```bash
+curl --proxy https://proxy.turingtap.ai:8443 \
+     --proxy-header "Proxy-Authorization: Bearer $SESSION_TOKEN" \
+     --cacert turingtap-ca.pem \
+     https://api.example.com/v1/things
+```
+
+## Firefox / Chrome (manual)
+
+1. Save `ca_pem` to a file and import it as a trusted root
+   **for this browser profile only**.
+2. Set the HTTPS proxy to `proxy.turingtap.ai:8443`.
+3. When prompted for proxy auth, use the session token as the password.
+
+Remove the CA from your trust store when you're done.

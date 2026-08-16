@@ -1,0 +1,204 @@
+export const metadata = { title: "Terms of Service | TuringTap" };
+
+# TuringTap Terms of Service
+
+**Version 2026.08.16 · Effective August 16, 2026**
+
+These Terms of Service ("**Terms**") are a binding agreement between you and
+Cyber Sea Labs LLC, a District of Columbia limited liability company doing
+business as TuringTap ("**TuringTap**", "**we**", "**us**"). By creating an account,
+clicking "Agree and continue", or using the Service, you accept these Terms
+and our [Privacy Policy](/legal/privacy). If you do not agree, do not use the
+Service.
+
+## 1. Definitions
+
+- **"Service"** means the TuringTap MCP server, the cloud proxy at
+  `proxy.turingtap.ai`, the relay, the control-plane API, the web dashboard
+  at `turingtap.ai`, and the TuringTap Companion mobile application,
+  collectively.
+- **"Agent Software"** means the `turingtap-agent` desktop binary you install
+  on your machine.
+- **"Session"** means the period between an MCP connection opening and
+  closing, during which a proxy traffic buffer exists in memory.
+- **"Session Traffic"** means the full decrypted HTTP requests and responses
+  that transit the proxy during a Session, including headers, bodies,
+  cookies, and any credentials contained therein.
+- **"AI Client"** means the third-party LLM application (for example Claude
+  Desktop, Cursor, or Continue) that you connect to the Service via MCP.
+- **"AI Provider"** means the operator of the model your AI Client uses (for
+  example Anthropic, OpenAI, or Google).
+- **"Target Service"** means any third-party website, API, or network host
+  whose traffic you route through the proxy.
+
+## 2. Account and Eligibility
+
+You must be at least 18 years old, or the age of majority in your
+jurisdiction, to use the Service. Accounts are personal to a single natural
+person. You are responsible for all activity conducted under your API keys
+and for revoking any key you believe has been compromised.
+
+## 3. The Service
+
+**What TuringTap does.** The Service terminates TLS for traffic that you, or
+your Agent Software acting on your instruction, choose to route through it;
+holds Session Traffic in volatile memory and exposes it to your AI Client via
+MCP tools; and relays a browser screencast to your paired mobile device when
+your AI Client requests human assistance.
+
+**What TuringTap does not do.** The Service does not store credentials
+(see § 5). It does not replay captured requests after a Session ends. It does
+not schedule or initiate requests against Target Services on its own — every
+request originates from your machine. It is not a general-purpose anonymizer
+or VPN, and using it as one is prohibited under § 8.
+
+## 4. Third-Party Service Terms — Your Warranty of Authorization
+
+**You direct the traffic. We observe it. You are solely responsible for what
+you point it at.**
+
+By routing traffic to a Target Service through TuringTap, you represent and
+warrant that: (a) you are authorized to access that Target Service in the
+manner you are accessing it — by ownership, employment, contract, written
+permission, or the Target Service's own terms; (b) your use does not violate
+the Target Service's terms of service, acceptable-use policy, robots.txt
+(where legally binding), or rate limits; (c) your use does not violate the
+Computer Fraud and Abuse Act (18 U.S.C. § 1030), the UK Computer Misuse Act
+1990, EU Directive 2013/40, or any equivalent unauthorized-access statute in
+your or the Target Service's jurisdiction; and (d) if the Target Service is on
+a private network reached via the LAN tunnel, you own or are authorized to
+test that network.
+
+You agree to **indemnify, defend, and hold harmless** TuringTap and its
+officers, directors, employees, and agents against any claim, damage, loss, or
+expense (including reasonable attorneys' fees) arising from your breach of
+this § 4. We may suspend a Session or account upon a good-faith abuse report
+from a Target Service operator.
+
+## 5. Data Retention and Credential Handling
+
+**TuringTap retains no traffic data.** Decrypted request and response content
+exists only in volatile per-session memory on the proxy and is purged when
+your Session ends. We do not persist request bodies, headers, credentials, or
+structural metadata about your traffic — except content you or your AI agent
+explicitly author into a handoff request (the prompt text shown to you),
+which we store until the handoff expires. We retain only your account record
+(email, subscription tier, hashed API keys, Stripe customer reference) and
+per-session byte counters used for quota enforcement, which are deleted with
+the Session.
+
+During a live Session, in-memory traffic is made available to **your** AI
+Client via the `get_traffic()` MCP tool, which transmits it — including any
+credentials it contains, in raw form — to **your** AI Provider over **their**
+API. **We do not filter or redact it:** partial redaction invites false
+confidence, so we do not promise it. Your AI Provider's data-retention and
+training policies — not ours — govern what happens to it there. TuringTap has
+no visibility into or control over your AI Provider's logs.
+
+**If credentials you consider sensitive transited a Session, rotate them when
+you are done.** Rotating them is your responsibility.
+
+## 6. Source Availability
+
+All TuringTap service code and infrastructure configuration is published at
+[github.com/turingtap](https://github.com/turingtap) under the Business Source
+License 1.1. You may read, audit, build, and run the code for evaluation and
+security review. You may not offer the Service, or a substantially similar
+hosted service derived from it, to third parties. The BSL license
+automatically converts to Apache-2.0 on **2030-07-08**.
+
+## 7. Plans, Billing, and Overage
+
+The tiers, caps, and overage rates published on the [pricing page](/#pricing)
+are incorporated into these Terms by reference. The Free tier is hard-capped
+at 0.1 GB per month, ten minutes per Session, and two handoffs per month;
+`goto()`, `act()`, and the LAN tunnel are disabled. Paid tiers renew monthly
+via Stripe and bill overage at the tier's published $/GB rate. We will provide
+a pro-rata refund on downgrade requested within seven days of a charge; overage
+charges are non-refundable. You may cancel at any time via the billing portal.
+
+## 8. Acceptable Use
+
+You will not use the Service to: access any system or data you are not
+authorized to access (see § 4); probe, scan, or launch a denial-of-service
+attack against a Target Service; send unsolicited bulk messages (SMTP egress
+is blocked regardless); circumvent a Target Service's paywall, licensing, or
+DRM; intercept the traffic of any person other than yourself without their
+informed consent; resell, sublicense, or expose the proxy endpoint to third
+parties; or reverse-engineer the Service beyond what applicable law permits
+notwithstanding contract.
+
+## 9. Agent Software Licence
+
+We grant you a personal, non-exclusive, non-transferable, revocable licence to
+install and run the Agent Software on machines you control, solely to use the
+Service. Open-source components bundled with the Agent Software are licensed
+under their respective licences as listed in the accompanying
+`THIRD_PARTY_LICENSES` file. The current Agent Software contains no exit-node
+or relay-for-others functionality; if a future version adds opt-in exit-node
+participation, it will be governed by a separate addendum requiring your fresh
+affirmative consent.
+
+## 10. Termination
+
+You may terminate at any time via the dashboard; Session buffers are purged
+immediately and account data is handled per the Privacy Policy. We may suspend
+or terminate your access for material breach of these Terms, non-payment, or
+violation of § 8, with or without notice as the severity warrants. Sections 4,
+5 (acknowledgements), 10, 11, 12, 13, and 15 survive termination.
+
+## 11. Warranty Disclaimer
+
+THE SERVICE AND AGENT SOFTWARE ARE PROVIDED **"AS IS"** AND **"AS AVAILABLE"**,
+WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION
+THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND
+NON-INFRINGEMENT. Session Traffic is exposed to your AI Client unfiltered;
+you remain responsible for credential hygiene under § 5. We do not warrant
+that use against any given Target Service is lawful or permitted by that
+service.
+
+## 12. Limitation of Liability
+
+TO THE MAXIMUM EXTENT PERMITTED BY LAW, TURINGTAP'S TOTAL LIABILITY TO YOU FOR
+ANY CLAIM ARISING OUT OF OR RELATING TO THESE TERMS OR THE SERVICE IS LIMITED
+TO THE GREATER OF (A) THE FEES YOU PAID US IN THE TWELVE MONTHS PRECEDING THE
+CLAIM, OR (B) US $100. IN NO EVENT WILL TURINGTAP BE LIABLE FOR ANY INDIRECT,
+INCIDENTAL, CONSEQUENTIAL, SPECIAL, OR PUNITIVE DAMAGES, OR FOR LOST PROFITS,
+DATA, OR GOODWILL, EVEN IF ADVISED OF THE POSSIBILITY. Some jurisdictions do
+not allow certain exclusions; in those jurisdictions our liability is limited
+to the maximum extent permitted by law.
+
+## 13. Indemnification
+
+In addition to your indemnity under § 4, you will indemnify and hold TuringTap
+harmless against claims arising from your breach of § 8. TuringTap will
+indemnify you against third-party claims that the Service itself (excluding
+your Session Traffic) infringes a valid intellectual-property right, provided
+you promptly notify us and allow us to control the defence.
+
+## 14. Changes to These Terms
+
+We may modify these Terms from time to time. For material changes we will give
+you at least thirty days' notice by email to your account address and by
+displaying a notice in the dashboard. The updated Terms take effect on the
+stated effective date; your continued use of the Service after that date, or
+your click of "Agree and continue" when prompted, constitutes acceptance. If
+you do not agree to the updated Terms, you must stop using the Service before
+they take effect.
+
+## 15. Governing Law and General
+
+These Terms are governed by the laws of the **District of Columbia**, without
+regard to its conflict-of-laws rules, and the state and federal courts located
+in the **District of Columbia** have exclusive jurisdiction over any dispute
+arising from these Terms. If any
+provision is held unenforceable, the remaining provisions remain in full
+effect. Our failure to enforce a provision is not a waiver. You may not assign
+these Terms without our written consent; we may assign them to a successor in
+connection with a merger or sale of assets. These Terms, together with the
+Privacy Policy, are the entire agreement between you and TuringTap regarding
+the Service.
+
+## 16. Contact
+
+Questions about these Terms: **legal@turingtap.ai** · Cyber Sea Labs LLC d/b/a TuringTap

@@ -1,0 +1,160 @@
+export const metadata = { title: "Privacy Policy | TuringTap" };
+
+# TuringTap Privacy Policy
+
+**Version 2026.08.16 · Effective August 16, 2026**
+
+This Privacy Policy explains what information Cyber Sea Labs LLC, a District
+of Columbia limited liability company doing business as TuringTap
+("**TuringTap**", "**we**", "**us**"), collects, how we use it, and what we
+deliberately do **not** collect. It should be read together with our
+[Terms of Service](/legal/tos).
+
+## 1. Who we are
+
+TuringTap operates `turingtap.ai`, the `proxy.turingtap.ai` MITM proxy, the
+TuringTap MCP server, the `turingtap-agent` desktop software, and the
+TuringTap Companion mobile app. Contact us at **privacy@turingtap.ai**.
+
+For GDPR purposes we are the **data controller** for Account Data (§ 3). For
+Session Traffic (§ 4) we act as a **data processor** on your behalf — you
+decide what to route through the proxy and to which AI Provider it is
+disclosed.
+
+## 2. Summary
+
+**We retain no traffic data.** Nothing derived from your proxied HTTP traffic
+— not bodies, not headers, not hostnames, not schemas — is written to durable
+storage — except content you or your AI agent explicitly author into a
+handoff request (the prompt text shown to you), which we store until the
+handoff expires. Session Traffic lives in RAM only, is purged when the
+session closes, and is disclosed only to **your** AI Provider at **your** AI
+Client's request. Account Data (email, tier, hashed API keys) is stored in
+Firestore and shared only with the sub-processors listed in § 8.
+
+## 3. Account Data
+
+**What we collect.** Your email address and Firebase Auth UID; your
+subscription tier and Stripe customer ID (payment card details stay with
+Stripe — we never see them); SHA-256 hashes of your MCP API keys (never the
+plaintext); FCM device tokens for your paired mobile devices; an
+`agent_online` flag for your desktop agent; per-session metadata (start
+time, bytes proxied; TTL 1 hour); per-handoff metadata (the reason prompt
+you or your AI agent authored, state, an optional dismissal message from
+your AI, timestamps; TTL 15 minutes); and a log of your Terms of Service
+acceptances (version, timestamp, IP address, user agent).
+
+**Why we collect it.** To perform our contract with you (provide the Service,
+bill you, push handoffs to your phone) and for our legitimate interest in
+abuse prevention and quota enforcement.
+
+**How long we keep it.** Until you delete your account, plus 30 days for
+backup rotation. Session and handoff documents TTL-expire independently as
+described above.
+
+## 4. Session Traffic
+
+**TuringTap retains no traffic data.** Decrypted request and response content
+exists only in a RAM ring-buffer inside the proxy process and is **never
+written to disk, database, object storage, message queue, or log.** It is
+purged on the earliest of: you closing the session, your MCP client
+disconnecting, one hour of idle time, or the proxy virtual machine (a
+Google Compute Engine instance) restarting or shutting down.
+
+**Who can see it.** You, via your AI Client calling `get_traffic()`. Your AI
+Provider (Anthropic, OpenAI, Google, etc.), because your AI Client sends the
+tool result to them for inference — **their** privacy policy governs
+retention on their side. `get_traffic()` returns the traffic — including any
+credentials it contains, in raw form — to your AI Client; we do not filter or
+redact it, because partial redaction invites false confidence, so we do not
+promise it. And us, only in the transient operational sense that the bytes
+exist in our process memory: no TuringTap employee has a tool, console, or
+procedure to inspect a live session buffer, and no such access will be built.
+
+**Our strong recommendation.** If credentials you consider sensitive
+transited a session, rotate them when you are done. Nothing about your
+traffic is stored after the session ends. See
+[/docs/rotate](/docs/rotate).
+
+## 5. Source Availability
+
+All TuringTap service code and infrastructure configuration is published at
+[github.com/turingtap](https://github.com/turingtap) under the Business
+Source License 1.1. You can audit exactly what runs. The BSL converts to
+Apache-2.0 on 2030-07-08.
+
+## 6. Mobile companion app
+
+The Companion app collects your Firebase Auth identity, an FCM device token,
+and camera frames during QR pairing (processed on-device, not uploaded).
+Screencast frames and touch events during a handoff are relayed end-to-end
+between your desktop agent and your phone through our relay service; we do
+not decode, inspect, or store them. Push notifications are limited to handoff
+prompts and `notify()` messages from your own AI agent — no marketing pushes.
+
+## 7. Cookies and the website
+
+`turingtap.ai` sets a first-party session cookie (Firebase Auth) and a Stripe
+cookie on the billing pages. We do not use third-party advertising or
+analytics cookies. We use Plausible, a cookieless analytics service, for
+aggregate usage statistics on our marketing site and account dashboard. It
+sets no cookies, collects no personal identifiers, and is never present on
+live handoff or session surfaces.
+
+## 8. Sub-processors
+
+We use the following sub-processors, each bound by a data-processing
+agreement. **Google Cloud Platform** (`us-central1`) hosts our services,
+Firestore, and Secret Manager, and sees all categories above at rest in their
+infrastructure. **Firebase** (Google) provides authentication, push messaging,
+and web hosting, and sees Account Data and device tokens; handoff push
+notifications transit Firebase Cloud Messaging carrying only a handoff
+identifier — the request content is fetched by your device over our
+authenticated API. **Stripe** processes
+payments and sees your payment details directly — we see only your customer
+ID and tier. **Apple** and **Google** distribute the mobile app under their
+respective store policies. **Plausible** provides cookieless website
+analytics and sees anonymous aggregate page and event counts — no Account
+Data, no Session Traffic, no personal identifiers. We will publish changes to this list at least 30
+days before a new sub-processor handles your data.
+
+## 9. Security
+
+The full security model is documented in our public repository. Highlights:
+the CA private key is held in Secret Manager with proxy-only access; API keys
+are stored only as SHA-256 hashes; services communicate over a VPC-internal
+mesh; and the proxy has no durable write path for traffic data.
+
+## 10. Your rights
+
+**Access and portability:** Dashboard → Settings → "Export account data"
+produces a JSON of everything listed in § 3. **Deletion:** Dashboard → Settings
+→ "Delete account" erases Account Data within 30 days; there is no traffic
+data to delete because none is retained (§ 4). **Rectification, restriction,
+or objection:** email privacy@turingtap.ai. **CCPA:** we do not sell or share
+personal information as defined by the CCPA, and no traffic data is retained
+or disclosed. You may lodge a complaint with your local supervisory
+authority.
+
+## 11. Children
+
+The Service is not directed to anyone under 18, and we do not knowingly
+collect data from minors. If you believe a minor has provided us with
+personal information, contact us and we will delete it.
+
+## 12. International transfers
+
+Data is processed in Google Cloud `us-central1` (United States). For EEA and
+UK users, transfers rely on the EU-US Data Privacy Framework (Google is
+certified) and, where needed, the EU Standard Contractual Clauses.
+
+## 13. Changes to this policy
+
+For material changes we will give 30 days' email notice to your account
+address and display a banner in the dashboard. Continued use after the
+effective date constitutes acceptance.
+
+## 14. Contact
+
+**privacy@turingtap.ai** · Cyber Sea Labs LLC d/b/a TuringTap · [registered address to be
+inserted]

@@ -1,0 +1,55 @@
+# Rotate credentials after a session
+
+## Why rotate
+
+During a TuringTap session, decrypted HTTP traffic — including
+`Authorization` headers, cookies, and any tokens in request bodies — is made
+available to your AI agent via `get_traffic()`, **in raw form**. TuringTap
+does not filter or redact it: partial redaction invites false confidence, so
+we do not promise it.
+
+TuringTap itself does **not** store these values. The session buffer lives in
+proxy RAM and is purged when the session closes. But your AI agent transmits
+the traffic to **your** AI provider (Anthropic, OpenAI, etc.), whose logs may
+retain the conversation. That's outside TuringTap's control.
+
+## When to rotate
+
+After any session where credentials you consider sensitive transited the
+proxy. If you logged into anything, entered a password, or the browser
+carried a session cookie for an account you care about while the session was
+open, treat that credential as exposed to your AI provider and rotate it once
+you're done with the task.
+
+## How to rotate
+
+For each service whose credentials transited:
+
+1. Log into the service normally.
+2. Invalidate the credential:
+   - **Passwords** — change the password and sign out of all other sessions
+     (usually under Security or Sessions in account settings).
+   - **Session cookies** — signing out of all sessions invalidates them; many
+     services offer "log out everywhere".
+   - **API keys / tokens** — revoke the key and mint a new one from the
+     provider's API-keys page (GitHub: Settings → Developer settings; Google
+     Cloud: APIs & Services → Credentials; Stripe: Developers → API keys).
+   - **OAuth grants** — revoke the grant from the provider's connected-apps
+     page (Google: myaccount.google.com/permissions; GitHub: Settings →
+     Applications).
+3. If the service supports it, review recent sign-in activity for anything
+   you don't recognize.
+
+## Reduce exposure next time
+
+- Scope `get_traffic(host=...)` to the narrowest host filter that answers the
+  question, and prefer `analyze()` (endpoint shapes only) when you don't need
+  raw exchanges.
+- Use throwaway accounts when reverse-engineering third-party APIs.
+- Ask your AI agent not to echo credential values into the chat.
+
+## What TuringTap keeps
+
+Nothing. Session traffic exists only in proxy RAM while the session is open
+and is purged on close. TuringTap persists no telemetry or analytics about
+your requests.

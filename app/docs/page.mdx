@@ -1,0 +1,44 @@
+# TuringTap docs
+
+TuringTap is an MCP server that gives your AI agent a **live, decrypted view
+of HTTP(S) traffic** plus a **human-in-the-loop handoff** for the parts
+an agent can't do alone.
+
+Your local `turingtap-agent` runs Chromium proxied through
+`proxy.turingtap.ai` (mitmproxy in the cloud). The AI agent reads the wire
+via `get_traffic()`, drives the browser via `goto()` / `act()`, and hands off
+to you via `ask_human()` when it hits 2FA, a captcha, or a consent screen —
+you solve it **in any browser** at the `solve_url` the tool returns (or from
+the [Pending handoffs card](/account) in your dashboard). The mobile app is
+optional: pair it if you want push notifications on the go.
+
+## What TuringTap is not
+
+- It does **not** store credentials.
+- It does **not** replay flows or schedule jobs.
+- It does **not** execute against third parties on its own initiative.
+
+Session traffic (including any credentials that transit) lives in proxy RAM
+for the session lifetime and is purged on close. Nothing about your traffic
+is persisted — no telemetry, no analytics. Traffic is returned to your AI
+agent **raw** — TuringTap does not redact credentials (partial redaction
+invites false confidence), so [rotate anything sensitive](/docs/rotate) after
+a session.
+
+## The 8 MCP tools
+
+| Tool | Purpose |
+| --- | --- |
+| `session_info()` | Proxy host/port, CA PEM, agent status, LAN CIDRs |
+| `get_traffic(cursor?, host?)` | Decrypted req/resp from the RAM buffer, raw and unfiltered |
+| `analyze(host?)` | Inferred endpoints (method, path template, schemas) |
+| `goto(url)` | Navigate the agent's Chromium (Personal+) |
+| `act(action, selector, value?)` | click / fill / press (Personal+) |
+| `ask_human(prompt, open_url?)` | Live screencast handoff — solve in any browser (`solve_url`), phone push if the app is paired |
+| `dismiss_human(handoff_id, message?)` | End a handoff |
+| `notify(title, body)` | Plain FCM push |
+
+`goto`, `act`, and `ask_human` all operate on the **same Chromium instance**,
+so a mid-flow handoff preserves cookies and session state.
+
+Next: [set up your MCP client](/docs/mcp-setup).

@@ -1,0 +1,36 @@
+# SKILL.md
+
+Drop this into your agent's skill/prompt directory so it knows how to use
+TuringTap effectively.
+
+[Download SKILL.md](/SKILL.md)
+
+## Worked patterns
+
+### Case 1 — mid-flow handoff
+
+1. `goto(url)` / `act(...)` until you hit a wall (2FA, captcha, consent).
+2. `ask_human(prompt)` — non-blocking; keep polling `get_traffic()`.
+3. When `human_active` flips false (or you see the traffic you needed),
+   `dismiss_human(handoff_id, "Thanks — got it.")`.
+4. Resume `act(...)`.
+
+### Case 2 — freeform demo
+
+1. `ask_human("Show me how you book a class", open_url)`.
+2. User demonstrates on their phone or desktop; hits **Done**.
+3. `analyze(host)` to summarize the endpoints.
+
+## Credential hygiene (for the AI agent)
+
+- `get_traffic()` returns **raw, unfiltered traffic** — any credentials it
+  contains enter your context and your model provider's logs. There is no
+  redaction: partial redaction invites false confidence, so TuringTap does
+  not promise it.
+- **Never echo credential values into the chat.** Refer to a credential by
+  host and kind ("the session cookie for `gym.com`"), never by value.
+- Prefer `analyze()` (endpoint shapes only) and narrow `host` filters when
+  you don't need raw exchanges.
+- **End the interaction by reminding the user to rotate** any credentials
+  they consider sensitive that transited the session: their AI provider's
+  logs may retain the conversation.
